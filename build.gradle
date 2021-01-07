@@ -3,7 +3,8 @@ buildscript {
         springBootVersion = '2.2.6.RELEASE'
     }
     repositories {
-    	mavenCentral()
+    	//mavenCentral()
+    	maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
     }
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
@@ -11,6 +12,9 @@ buildscript {
 }
 
 apply plugin: "java"
+apply plugin: 'eclipse'
+apply plugin: "maven-publish"
+apply plugin: 'maven'
 apply plugin: "org.springframework.boot"
 apply plugin: "io.spring.dependency-management"
 
@@ -19,7 +23,8 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 repositories {
-	mavenCentral()
+	//mavenCentral()
+	maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
 }
 
 dependencies {
@@ -29,7 +34,8 @@ dependencies {
 	}
 	//lombok
 	compile 'org.projectlombok:lombok:1.16.16'
-
+	annotationProcessor "org.projectlombok:lombok:1.16.16"  
+	
 	//Swagger
 	compile 'io.springfox:springfox-swagger2:2.6.1'
 	compile 'io.springfox:springfox-swagger-ui:2.6.1'
@@ -42,8 +48,37 @@ dependencies {
     
 	//mysql
 	compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.18'
+	
+	//log4j2
+	compile 'org.springframework.boot:spring-boot-starter-log4j2'
+	
+	//aop
+	compile 'org.springframework.boot:spring-boot-starter-aop'
+	compile 'com.github.pagehelper:pagehelper-spring-boot-starter:1.2.10'
+	compile fileTree(dir:'libs',include:['*.jar'])
 
+	//websocket
+	compile 'org.springframework.boot:spring-boot-starter-websocket'
+	
+	compile 'com.alibaba:fastjson:1.2.47'
 }
+
+configurations {
+	all*.exclude module: "spring-boot-starter-logging"
+	all*.exclude module: "logback-classic"
+	all*.exclude module: "log4j-over-slf4j"
+}
+
+//打包相关
+jar {
+    baseName = 'demo'
+    version = '0.0.1'
+    manifest {
+        attributes "Manifest-Version": 1.0,
+                   'Main-Class': 'com.example.DemoApplication'
+    }
+}
+
 
 test {
 	useJUnitPlatform()

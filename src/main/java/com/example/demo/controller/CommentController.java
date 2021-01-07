@@ -1,35 +1,34 @@
 package com.example.demo.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.domain.dto.Hello;
-import com.example.demo.domain.entity.Test;
+import com.example.demo.domain.entity.Video;
+import com.example.demo.domain.vo.CommentVo;
 import com.example.demo.mapper.TestMapper;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Api("hello测试接口")
 @RestController
 @RequestMapping("/v1")
-public class HelloController {
+public class CommentController {
 	@Autowired
 	TestMapper testMapper;
 	
-	@GetMapping("/hello")
-	@ApiOperation("/hello")
-	public Hello hello() {
-		Hello hello = new Hello();
-		
-		Test test= testMapper.findTestById(2);
-//		Test test= testMapper.findById(2);
-		hello.setHelloId(test.id);
-		hello.setHelloName(test.getName());
-		return hello;
+	private static  Logger loggerHello = LoggerFactory.getLogger("hello");
+	
+	@GetMapping("/commit")
+	@ApiOperation("/commit")
+	public void commit() {
+		CommentVo commentVo = new CommentVo();
+		Video test= testMapper.findTestById(2);
+
 	}
+	
 	
 
 }
