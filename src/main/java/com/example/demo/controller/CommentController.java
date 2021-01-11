@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domain.entity.Video;
-import com.example.demo.domain.vo.CommentVo;
+import com.example.demo.domain.vo.MessageVo;
 import com.example.demo.mapper.TestMapper;
 
 import io.swagger.annotations.ApiOperation;
@@ -24,7 +24,7 @@ public class CommentController {
 	@GetMapping("/commit")
 	@ApiOperation("/commit")
 	public void commit() {
-		CommentVo commentVo = new CommentVo();
+		MessageVo commentVo = new MessageVo();
 		Video test= testMapper.findTestById(2);
 
 	}

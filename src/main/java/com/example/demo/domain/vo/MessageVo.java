@@ -5,14 +5,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class CommentVo {
+public class MessageVo {
 	
-	@JsonProperty("video_id")
-	public String videoId;
-
-	@JsonProperty("comment")
-	public String comment;
-
 	@JsonProperty("nickname")
 	public String nickname;
+
+	@JsonProperty("avatar_url")
+	public String avatarUrl;
+	
+	@JsonProperty("message")
+	public String message;
+
 }

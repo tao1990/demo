@@ -60,7 +60,12 @@ dependencies {
 	//websocket
 	compile 'org.springframework.boot:spring-boot-starter-websocket'
 	
+	//fastjson
 	compile 'com.alibaba:fastjson:1.2.47'
+
+	//jedis
+	compile 'org.springframework.boot:spring-boot-starter-data-redis'
+	compile 'redis.clients:jedis:2.9.0'
 }
 
 configurations {

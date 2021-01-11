@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- status="OFF",可以去掉,它的含义为是否记录log4j2本身的event信息,默认是OFF -->
+<configuration status="WARN">
+    <!-- 定义下面的引用名 -->
+    <Properties>
+        <property name="log_floder">/logs</property>
+        <property name="project_name">demo</property>
+        <property name="every_file_size">1M</property><!-- 日志切割的最小单位 -->
+    </Properties>
+
+    <!--先定义所有的appender-->
+    <appenders>
+        <!--这个输出控制台的配置-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!--控制台只输出level及以上级别的信息(onMatch),其他的直接拒绝(onMismatch)-->
+            <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY"/>
+            <!--这个都知道是输出日志的格式-->
+            <PatternLayout pattern="%d{HH:mm:ss} %-5level [%class{36}-%M:%L] - %msg%xEx%n"/>
+        </Console>
+
+        <!--文件会打印出所有信息,这个log每次运行程序会自动清空,由append属性决定,适合临时测试用-->
+        <File name="debug" fileName="${log_floder}/${project_name}/debug.log" append="false">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level [%class{36}-%M:%L] - %msg%xEx%n"/>
+        </File>
+
+        <!-- 访问日志 -->
+        <RollingFile name="ACCESS" fileName="${log_floder}/${project_name}/access.log"
+                     filePattern="${log_floder}/${project_name}/$${date:yyyy-MM-dd}/access-%d{yyyy-MM-dd}#%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level - %msg%xEx%n"/>
+            <SizeBasedTriggeringPolicy size="${every_file_size}"/>
+        </RollingFile>
+
+        <!-- hello -->
+        <RollingFile name="hello" fileName="${log_floder}/${project_name}/hello.log"
+                     filePattern="${log_floder}/${project_name}/$${date:yyyy-MM-dd}/bp-json-%d{yyyy-MM-dd}#%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level - %msg%xEx%n"/>
+            <SizeBasedTriggeringPolicy size="${every_file_size}"/>
+        </RollingFile>
+        
+    
+    </appenders>
+
+    <!--然后定义logger,只有定义了logger并引入的appender,appender才会生效-->
+    <loggers>
+        <!--建立一个默认的root的logger-->
+        <root level="info">
+            <AppenderRef ref="Application"/>
+            <AppenderRef ref="Console"/>
+        </root>
+        <Logger name="hello" level="info" additivity="false">
+            <AppenderRef ref="hello"/>
+        </Logger>
+    </loggers>
+</configuration>
