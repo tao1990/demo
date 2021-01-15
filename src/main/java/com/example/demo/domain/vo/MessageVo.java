@@ -7,6 +7,9 @@ import lombok.Data;
 @Data
 public class MessageVo {
 	
+	@JsonProperty("unique_id")
+	public String uniqueId;
+	
 	@JsonProperty("nickname")
 	public String nickname;
 

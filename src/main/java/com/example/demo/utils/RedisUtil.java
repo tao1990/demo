@@ -20,6 +20,17 @@ public class RedisUtil {
     @Autowired
     private JedisPool jedisPool;
 
+    public Long incr(String key) {
+    	Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            return jedis.incr(key);
+        } catch (Exception e) {
+            return 0L;
+        } finally {
+            returnResource(jedisPool, jedis);
+        }
+    }
     /**
      * 向Redis中存值，永久有效
      */

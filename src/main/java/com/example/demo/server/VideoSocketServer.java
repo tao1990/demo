@@ -152,7 +152,7 @@ System.out.println(session);
     }
     
     
-    @Scheduled(fixedDelay = 2000L)
+//    @Scheduled(fixedDelay = 2000L)
     public void test() {
     	
     	//查询redis 未拉取条数
