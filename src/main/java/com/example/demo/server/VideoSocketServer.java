@@ -17,13 +17,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.demo.utils.RedisUtil;
 
 import lombok.extern.log4j.Log4j2;
 
-@ServerEndpoint("/dmserver/{userId}")
+@ServerEndpoint(value="/dmserver/{videoId}")
 @Component
 @Log4j2
 public class VideoSocketServer {
@@ -38,32 +37,32 @@ public class VideoSocketServer {
     private static ConcurrentHashMap<String,VideoSocketServer> webSocketMap = new ConcurrentHashMap<>();
     /**与某个客户端的连接会话，需要通过它来给客户端发送数据*/
     private Session session;
-    /**接收userId*/
-    private String userId="";
+    /**接收videoId*/
+    private String videoId="";
 
     /**
      * 连接建立成功调用的方法*/
     @OnOpen
-    public void onOpen(Session session,@PathParam("userId") String userId) {
+    public void onOpen(Session session,@PathParam("videoId") String videoId) {
         this.session = session;
-        this.userId=userId;
-        if(webSocketMap.containsKey(userId)){
-            webSocketMap.remove(userId);
-            webSocketMap.put(userId,this);
+        this.videoId=videoId;
+        if(webSocketMap.containsKey(videoId)){
+            webSocketMap.remove(videoId);
+            webSocketMap.put(videoId,this);
             //加入set中
         }else{
-            webSocketMap.put(userId,this);
+            webSocketMap.put(videoId,this);
             //加入set中
             addOnlineCount();
             //在线数加1
         }
-System.out.println(session);
-        log.info("用户连接:"+userId+",当前在线人数为:" + getOnlineCount());
+		System.out.println(session);
+        log.info("弹幕端连接:"+videoId+",当前在线弹幕端连接数为:" + getOnlineCount());
 
         try {
             sendMessage("连接成功");
         } catch (IOException e) {
-            log.error("用户:"+userId+",网络异常!!!!!!");
+            log.error("弹幕端:"+videoId+",网络异常!!!!!!");
         }
     }
 
@@ -72,41 +71,14 @@ System.out.println(session);
      */
     @OnClose
     public void onClose() {
-        if(webSocketMap.containsKey(userId)){
-            webSocketMap.remove(userId);
+        if(webSocketMap.containsKey(videoId)){
+            webSocketMap.remove(videoId);
             //从set中删除
             subOnlineCount();
         }
-        log.info("用户退出:"+userId+",当前在线人数为:" + getOnlineCount());
+        log.info("video端退出:"+videoId+",当前在线数为:" + getOnlineCount());
     }
 
-    /**
-     * 收到客户端消息后调用的方法
-     *
-     * @param message 客户端发送过来的消息*/
-    @OnMessage
-    public void onMessage(String message, Session session) {
-    	System.out.println(session);
-        log.info("用户消息:"+userId+",报文:"+message);
-        
-        JSONObject object = JSON.parseObject(message);
-        
-        String toUserId=object.get("toUserId").toString();
-        String content= object.get("contentText").toString();
-        
-	      if(webSocketMap.containsKey(toUserId)){
-		      try {
-				webSocketMap.get(toUserId).sendMessage(content);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		  }else{
-		      log.error("请求的userId:"+toUserId+"不在该服务器上");
-		      //否则不在这个服务器上，发送到mysql或者redis
-		  }
-       
-    }
 
     /**
      *
@@ -115,7 +87,8 @@ System.out.println(session);
      */
     @OnError
     public void onError(Session session, Throwable error) {
-        log.error("用户错误:"+this.userId+",原因:"+error.getMessage());
+    	System.out.println("???");
+        log.error("用户错误:"+this.videoId+",原因:"+error.getMessage());
         error.printStackTrace();
     }
     /**
@@ -129,13 +102,13 @@ System.out.println(session);
     /**
      * 发送自定义消息
      * */
-    public static void sendInfo(String message,@PathParam("userId") String userId) throws IOException {
-        log.info("发送消息到:"+userId+"，报文:"+message);
-//        if(StringUtils.isNotBlank(userId)&&webSocketMap.containsKey(userId)){
-        if(userId!=null&&webSocketMap.containsKey(userId)){
-            webSocketMap.get(userId).sendMessage(message);
+    public static void sendInfo(String message,@PathParam("videoId") String videoId) throws IOException {
+        log.info("发送消息到:"+videoId+"，报文:"+message);
+//        if(StringUtils.isNotBlank(videoId)&&webSocketMap.containsKey(videoId)){
+        if(videoId!=null&&webSocketMap.containsKey(videoId)){
+            webSocketMap.get(videoId).sendMessage(message);
         }else{
-            log.error("用户"+userId+",不在线！");
+            log.error("用户"+videoId+",不在线！");
         }
     }
 
@@ -152,19 +125,20 @@ System.out.println(session);
     }
     
     
-//    @Scheduled(fixedDelay = 2000L)
+    @Scheduled(fixedDelay = 2000L)
     public void test() {
     	
     	//查询redis 未拉取条数
-    	String unreadStr = redisUtil.get("unread_"+"10");
+    	String unreadStr = redisUtil.get("hl_usend");
     	Integer unread = Integer.parseInt(unreadStr);
     	if(unread>0) {
     		//置零
+    		redisUtil.set("hl_usend", "0");
     		//获取条数的list转给前端
     		List<String> list= redisUtil.getList("hl",0,unread);
             String listJson = list.toString();
 //        	System.out.println(webSocketMap);
-        	System.out.println(webSocketMap.get("10"));
+//        	System.out.println(webSocketMap.get("10"));
         	try {
     			webSocketMap.get("10").sendMessage(listJson);
     		} catch (IOException e) {
@@ -173,12 +147,6 @@ System.out.println(session);
     		}
         	System.out.println("=========");
     	}
-    	
-    	
-    	
-    	
-    	
-    	
 
     	
     }

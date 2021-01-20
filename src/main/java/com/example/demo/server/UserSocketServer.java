@@ -31,13 +31,13 @@ import lombok.extern.log4j.Log4j2;
 @ServerEndpoint("/imserver/{userId}")
 @Component
 @Log4j2
-public class WebSocketServer {
+public class UserSocketServer {
 	
 //	static Log log=LogFactory.get(WebSocketServer.class);
     /**静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。*/
     private static int onlineCount = 0;
     /**concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。*/
-    private static ConcurrentHashMap<String,WebSocketServer> webSocketMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String,UserSocketServer> webSocketMap = new ConcurrentHashMap<>();
     /**与某个客户端的连接会话，需要通过它来给客户端发送数据*/
     private Session session;
     /**接收userId*/
@@ -166,11 +166,11 @@ public class WebSocketServer {
     }
 
     public static synchronized void addOnlineCount() {
-        WebSocketServer.onlineCount++;
+    	UserSocketServer.onlineCount++;
     }
 
     public static synchronized void subOnlineCount() {
-        WebSocketServer.onlineCount--;
+    	UserSocketServer.onlineCount--;
     }
 	
 

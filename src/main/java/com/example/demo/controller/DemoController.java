@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.example.demo.server.WebSocketServer;
-
 @RestController
 @RequestMapping("/demo")
 public class DemoController {
@@ -27,7 +25,7 @@ public class DemoController {
 
     @RequestMapping("/push/{toUserId}")
     public ResponseEntity<String> pushToWeb(String message, @PathVariable String toUserId) throws IOException {
-        WebSocketServer.sendInfo(message,toUserId);
+//        WebSocketServer.sendInfo(message,toUserId);
         return ResponseEntity.ok("MSG SEND SUCCESS");
     }
 }
