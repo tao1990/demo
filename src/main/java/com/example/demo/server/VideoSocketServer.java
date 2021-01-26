@@ -59,11 +59,7 @@ public class VideoSocketServer {
 		System.out.println(session);
         log.info("弹幕端连接:"+videoId+",当前在线弹幕端连接数为:" + getOnlineCount());
 
-        try {
-            sendMessage("连接成功");
-        } catch (IOException e) {
-            log.error("弹幕端:"+videoId+",网络异常!!!!!!");
-        }
+       
     }
 
     /**
@@ -99,18 +95,7 @@ public class VideoSocketServer {
     }
 
 
-    /**
-     * 发送自定义消息
-     * */
-    public static void sendInfo(String message,@PathParam("videoId") String videoId) throws IOException {
-        log.info("发送消息到:"+videoId+"，报文:"+message);
-//        if(StringUtils.isNotBlank(videoId)&&webSocketMap.containsKey(videoId)){
-        if(videoId!=null&&webSocketMap.containsKey(videoId)){
-            webSocketMap.get(videoId).sendMessage(message);
-        }else{
-            log.error("用户"+videoId+",不在线！");
-        }
-    }
+
 
     public static synchronized int getOnlineCount() {
         return onlineCount;

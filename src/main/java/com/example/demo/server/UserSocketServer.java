@@ -28,7 +28,7 @@ import com.example.demo.mapper.TestMapper;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j2;
 
-@ServerEndpoint("/imserver/{userId}")
+@ServerEndpoint("/user-server/{userId}")
 @Component
 @Log4j2
 public class UserSocketServer {
