@@ -18,5 +18,20 @@ public class MessageVo {
 	
 	@JsonProperty("message")
 	public String message;
+	
+	@JsonProperty("time")
+	public String time;
+	
+	@JsonProperty("color")
+	public String color;
+	
+	@JsonProperty("size")
+	public String size;
+	
+	@JsonProperty("position")
+	public String position;
 
+	@JsonProperty("isnew")
+	public String isnew;
+	
 }

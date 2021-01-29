@@ -12,7 +12,9 @@ $("#danmup").danmuplayer({
   src:"level5.mp4",       //视频源
   width:800,            //视频宽度
   height:445,            //视频高度
-  url_to_get_danmu: "xxx.php", 
+  url_to_get_danmu: "http://127.0.0.1:8090/v1/history", 
+  socket_url:"http://127.0.0.1:8090/dmserver/10",
+  url_to_update_time: "http://127.0.0.1:8090/v1/updateTime", 
 });
 
 	</script>

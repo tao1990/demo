@@ -6,8 +6,6 @@
  * @license MIT
  */
 
-
-
 ;(function( $ ){
 
 
@@ -66,7 +64,7 @@
 							"text-shadow":" 0px 0px 2px #FFFFFF"
 						});
 					if (danmus[i].hasOwnProperty('isnew')){
-						$("#linshi").css({"border":"2px solid "+danmus[i].color});
+						$("#linshi").css({"border":"0px solid "+danmus[i].color});
 					}
 					if( danmus[i].size == 0)  $("#linshi").css("font-size",options.font_size_small);
 					if  ( danmus[i].position == 0){
@@ -242,12 +240,13 @@ $.fn.danmu.Constructor = Danmu;
 
 
 			function query() {
-				console.log('xx');
 				$.get(options.url_to_get_danmu, function(data, status) {
 					var danmu_from_sql = eval(data);
 					for (var i = 0; i < danmu_from_sql.length; i++) {
-						var danmu_ls = eval('(' + danmu_from_sql[i] + ')');
-						$('#danmu71452').danmu("add_danmu", danmu_ls);
+						console.log(danmu_from_sql[i])
+						// var danmu_ls = eval('(' + danmu_from_sql[i] + ')');
+						// $('#danmu71452').danmu("add_danmu", danmu_ls);
+						send_danmu_diy(danmu_from_sql[i])
 					}
 				});
 			};
@@ -275,13 +274,22 @@ $.fn.danmu.Constructor = Danmu;
 					});
 				});
 
+				var socket_status=0;
+				var update_time_status=0;
 				this.on('play', function(e) {
 					console.log('playback has started!');
 					$('#danmu71452').data("nowtime", parseInt(danmu_video.currentTime() * 10));
 					$('#danmu71452').danmu("danmu_resume");
 					
-					socket();
-					// var int=self.setInterval("send_danmu2('xxx')",1000);
+					if(socket_status==0){
+						socket_status=1;
+						socket(options);
+					}
+					
+					if(update_time_status==0){
+						update_time_status=1;
+						updateTime(options);
+					}
 
 
 				});
@@ -398,7 +406,8 @@ $.fn.danmu.Constructor = Danmu;
 		opacity: "1",
 		top_botton_danmu_time: 6000,
 		url_to_get_danmu: "",
-		url_to_post_danmu: ""
+		url_to_post_danmu: "",
+		url_to_update_time: "",
 	}
 
 
@@ -435,11 +444,6 @@ jQuery(document).ready(function() {
 		}
 	});
 	
-	
-	
-	//setTimeout(function(){
-　　//send_danmu2('xxx');
-　　//},3000);
 	
 });
 
@@ -486,6 +490,24 @@ function send_danmu2(str) {
 	document.getElementById('danmu_text').value = '';
 };
 
+
+function send_danmu_diy(str) {
+	var text = str.message;
+	var color = str.color;
+	var position = str.position;
+	var size = str.size;
+	var time = str.time;
+	var isnew = str.isnew;
+
+
+	var text_obj = '{ "text":"' + text + '","color":"' + color + '","size":"' + size + '","position":"' + position + '","time":' + time + '}';
+
+	var text_obj = '{ "text":"' + text + '","color":"' + color + '","size":"' + size + '","position":"' + position + '","time":' + time + ',"isnew":"'+isnew+'"}';
+	var new_obj = eval('(' + text_obj + ')');
+	jQuery('#danmu71452').danmu("add_danmu", new_obj);
+	console.log(text_obj);
+};
+
 function op() {
 	var op = document.getElementById('op').value;
 	op = op / 100;
@@ -519,16 +541,15 @@ function changehide() {
 }
 
 
-function socket(){
+function socket(options){
 	var socket;
+	console.log(options)
 	if(typeof(WebSocket) == "undefined") {
 		console.log("您的浏览器不支持WebSocket");
 	}else{
 		console.log("您的浏览器支持WebSocket");
 		//实现化WebSocket对象，指定要连接的服务器地址与端口  建立连接
-		//等同于socket = new WebSocket("ws://localhost:8888/xxxx/im/25");
-		//var socketUrl="${request.contextPath}/im/"+$("#userId").val();
-		var socketUrl="http://127.0.0.1:8090/dmserver/10";
+		var socketUrl=options.socket_url;
 		socketUrl=socketUrl.replace("https","ws").replace("http","ws");
 		console.log(socketUrl);
 		if(socket!=null){
@@ -546,15 +567,14 @@ function socket(){
 		};
 		//获得消息事件
 		socket.onmessage = function(msg) {
+			//发现消息进入    开始处理前端触发逻辑
 
 			var jsonList=JSON.parse( msg.data );
 			console.log(jsonList)
 			jsonList.forEach(function (j) {
-				send_danmu2(j.message)
+				send_danmu_diy(j.message)
 			});
 
-			// send_danmu2('xxx')
-			//发现消息进入    开始处理前端触发逻辑
 		};
 		//关闭事件
 		socket.onclose = function() {
@@ -567,3 +587,15 @@ function socket(){
 	}
 }
 
+
+function updateTime(options){
+		update_time_status = 1;
+		window.setInterval(function() {
+			var time = jQuery('#danmu71452').data("nowtime");
+			console.log('time:'+time)
+	
+			$.get(options.url_to_update_time+'?time='+time, function(data, status) {
+			console.log(data);
+		});
+			},2000)
+}
