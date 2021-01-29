@@ -53,6 +53,9 @@ public class HlController {
 	public Integer send(@RequestBody(required = true) MessageVo form) {
 		Integer res = 500;
 		try {
+			
+			String hlNowTime= redisUtil.get("hl_now_time");
+			form.setTime(hlNowTime);
 			String json = JSON.toJSONString(form);
 		    redisUtil.lPush("hl", json);
 		    redisUtil.incr("hl_usend");

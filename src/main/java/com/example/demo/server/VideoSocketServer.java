@@ -110,7 +110,7 @@ public class VideoSocketServer {
     }
     
     
-    @Scheduled(fixedDelay = 2000L)
+    @Scheduled(fixedDelay = 1000L)
     public void test() {
     	
     	//查询redis 未拉取条数
@@ -120,10 +120,8 @@ public class VideoSocketServer {
     		//置零
     		redisUtil.set("hl_usend", "0");
     		//获取条数的list转给前端
-    		List<String> list= redisUtil.getList("hl",0,unread);
+    		List<String> list= redisUtil.getList("hl",0,unread-1);
             String listJson = list.toString();
-//        	System.out.println(webSocketMap);
-//        	System.out.println(webSocketMap.get("10"));
         	try {
     			webSocketMap.get("10").sendMessage(listJson);
     		} catch (IOException e) {

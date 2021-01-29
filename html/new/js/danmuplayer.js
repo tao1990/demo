@@ -505,7 +505,6 @@ function send_danmu_diy(str) {
 	var text_obj = '{ "text":"' + text + '","color":"' + color + '","size":"' + size + '","position":"' + position + '","time":' + time + ',"isnew":"'+isnew+'"}';
 	var new_obj = eval('(' + text_obj + ')');
 	jQuery('#danmu71452').danmu("add_danmu", new_obj);
-	console.log(text_obj);
 };
 
 function op() {
@@ -570,9 +569,9 @@ function socket(options){
 			//发现消息进入    开始处理前端触发逻辑
 
 			var jsonList=JSON.parse( msg.data );
-			console.log(jsonList)
 			jsonList.forEach(function (j) {
-				send_danmu_diy(j.message)
+				console.log(j)
+				send_danmu_diy(j)
 			});
 
 		};
@@ -591,11 +590,11 @@ function socket(options){
 function updateTime(options){
 		update_time_status = 1;
 		window.setInterval(function() {
-			var time = jQuery('#danmu71452').data("nowtime");
-			console.log('time:'+time)
+			var time = jQuery('#danmu71452').data("nowtime")+20;
+			// console.log('time:'+time)
 	
 			$.get(options.url_to_update_time+'?time='+time, function(data, status) {
-			console.log(data);
+			// console.log(data);
 		});
-			},2000)
+			},1000)
 }
